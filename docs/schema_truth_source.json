@@ -1,0 +1,320 @@
+{
+  "order_id": {
+    "header": "order_id",
+    "description": "Unique order identifier",
+    "example": "ORD-1001",
+    "synonyms": [
+      "order id",
+      "order_no",
+      "order no",
+      "order number",
+      "ord no",
+      "ord number",
+      "ord id",
+      "order#",
+      "order code",
+      "order ref",
+      "order reference",
+      "reference",
+      "ref",
+      "ref no",
+      "ref#",
+      "orderid",
+      "order-id",
+      "orderID"
+    ],
+    "header_regex": "^(?i)(order[\\s_-]*id|order[\\s_-]*no\\.?|order[\\s_-]*number|ord[\\s_-]*(no|number|id)|reference|ref(eren[ct]e)?[\\s_-]*(no\\.?|id|#)?|order[\\s_-]*code|order[\\s_-]*ref)$"
+  },
+  "order_date": {
+    "header": "order_date",
+    "description": "ISO date of order",
+    "example": "2025-08-09",
+    "synonyms": [
+      "order date",
+      "orderdate",
+      "order-date",
+      "ordered on",
+      "ordered_on",
+      "order dt",
+      "date",
+      "date of order"
+    ],
+    "header_regex": "^(?i)(order[\\s_-]*date|ordered[\\s_-]*on|order[\\s_-]*dt|date(?:[\\s_-]*of[\\s_-]*order)?)$"
+  },
+  "customer_id": {
+    "header": "customer_id",
+    "description": "Internal customer id",
+    "example": "CUST-42",
+    "synonyms": [
+      "customer id",
+      "cust id",
+      "cust_id",
+      "customer code",
+      "customer#",
+      "client id",
+      "client_id",
+      "client ref",
+      "client_ref",
+      "client reference"
+    ],
+    "header_regex": "^(?i)(customer[\\s_-]*id|cust[\\s_-]*id|customer[\\s_-]*code|customer[\\s_-]*#|client[\\s_-]*(id|ref|reference))$"
+  },
+  "customer_name": {
+    "header": "customer_name",
+    "description": "Full name",
+    "example": "Aarav Sharma",
+    "synonyms": [
+      "customer",
+      "customer name",
+      "client",
+      "client name",
+      "buyer name",
+      "party name",
+      "customer_full_name"
+    ],
+    "header_regex": "^(?i)(customer([\\s_-]*name)?|client([\\s_-]*name)?|buyer[\\s_-]*name|party[\\s_-]*name)$"
+  },
+  "email": {
+    "header": "email",
+    "description": "Contact email",
+    "example": "aarav@example.com",
+    "synonyms": [
+      "email",
+      "e-mail",
+      "email address",
+      "e-mail address",
+      "email_id",
+      "email id",
+      "contact email",
+      "mail"
+    ],
+    "header_regex": "^(?i)(e-?mail([\\s_-]*address)?|email([\\s_-]*address)?|email[\\s_-]*id|contact[\\s_-]*email|mail)$"
+  },
+  "phone": {
+    "header": "phone",
+    "description": "Contact phone",
+    "example": "+91-9000156794",
+    "synonyms": [
+      "phone",
+      "phone #",
+      "phone number",
+      "mobile",
+      "mobile number",
+      "mobile no",
+      "contact",
+      "contact number",
+      "contact no",
+      "telephone",
+      "tel"
+    ],
+    "header_regex": "^(?i)(phone([\\s_-]*number|[\\s_-]*#)?|mobile([\\s_-]*number|[\\s_-]*no\\.?)?|contact([\\s_-]*(number|no\\.?))?|telephone|tel)$"
+  },
+  "billing_address": {
+    "header": "billing_address",
+    "description": "Billing address line",
+    "example": "221B Baker Street",
+    "synonyms": [
+      "billing address",
+      "bill addr",
+      "bill address",
+      "bill_to",
+      "bill to",
+      "billing street",
+      "invoice address",
+      "invoicing address",
+      "bill-to"
+    ],
+    "header_regex": "^(?i)(billing[\\s_-]*address|bill[\\s_-]*addr|bill[\\s_-]*address|bill[\\s_-]*to|billing[\\s_-]*street|invoice[\\s_-]*address|invoicing[\\s_-]*address)$"
+  },
+  "shipping_address": {
+    "header": "shipping_address",
+    "description": "Shipping address line",
+    "example": "14 MG Road",
+    "synonyms": [
+      "shipping address",
+      "ship addr",
+      "ship address",
+      "ship_to",
+      "ship to",
+      "delivery address",
+      "ship-to"
+    ],
+    "header_regex": "^(?i)(shipping[\\s_-]*address|ship[\\s_-]*addr|ship[\\s_-]*address|ship[\\s_-]*to|delivery[\\s_-]*address)$"
+  },
+  "city": {
+    "header": "city",
+    "description": "City",
+    "example": "Bengaluru",
+    "synonyms": ["city", "town"],
+    "header_regex": "^(?i)(city|town)$"
+  },
+  "state": {
+    "header": "state",
+    "description": "State/Province",
+    "example": "Karnataka",
+    "synonyms": ["state", "state/province", "province", "region", "state name"],
+    "header_regex": "^(?i)(state([\\s/_-]*province)?|province|region|state[\\s_-]*name)$"
+  },
+  "postal_code": {
+    "header": "postal_code",
+    "description": "Zip/Postal",
+    "example": "560095",
+    "synonyms": [
+      "postal code",
+      "postcode",
+      "zip",
+      "zip code",
+      "zip/postal",
+      "pin",
+      "pin code",
+      "pincode"
+    ],
+    "header_regex": "^(?i)(postal[\\s_-]*code|postcode|zip([\\s_-]*code)?|pin([\\s_-]*code)?)$"
+  },
+  "country": {
+    "header": "country",
+    "description": "Country",
+    "example": "India",
+    "synonyms": ["country", "country/region", "nation"],
+    "header_regex": "^(?i)(country([\\s/_-]*region)?|nation)$"
+  },
+  "product_sku": {
+    "header": "product_sku",
+    "description": "SKU code",
+    "example": "SW-1234",
+    "synonyms": [
+      "sku",
+      "product sku",
+      "stock keeping unit",
+      "stock_code",
+      "stock code",
+      "product code"
+    ],
+    "header_regex": "^(?i)((product[\\s_-]*)?sku|stock[\\s_-]*keeping[\\s_-]*unit|stock[\\s_-]*code|product[\\s_-]*code)$"
+  },
+  "product_name": {
+    "header": "product_name",
+    "description": "Item name",
+    "example": "Alpha SaaS",
+    "synonyms": [
+      "product name",
+      "item",
+      "item name",
+      "desc",
+      "description",
+      "item desc"
+    ],
+    "header_regex": "^(?i)(product[\\s_-]*name|item([\\s_-]*name)?|desc(ription)?)$"
+  },
+  "category": {
+    "header": "category",
+    "description": "Category",
+    "example": "Software Subscription",
+    "synonyms": ["category", "cat", "cat.", "product category", "line"],
+    "header_regex": "^(?i)(category|cat\\.?|product[\\s_-]*category|line)$"
+  },
+  "subcategory": {
+    "header": "subcategory",
+    "description": "Subcategory if any",
+    "example": "Enterprise",
+    "synonyms": ["subcategory", "subcat", "sub-cat", "segment", "subclass"],
+    "header_regex": "^(?i)(sub[\\s_-]*category|subcat|sub-cat|segment|subclass)$"
+  },
+  "quantity": {
+    "header": "quantity",
+    "description": "Units ordered",
+    "example": "3",
+    "synonyms": ["qty", "quantity", "unit", "units", "count"],
+    "header_regex": "^(?i)(qty|quantity|units?|count)$"
+  },
+  "unit_price": {
+    "header": "unit_price",
+    "description": "Price per unit",
+    "example": "4999.99",
+    "synonyms": ["unit price", "price", "price per unit", "rate", "unit cost"],
+    "header_regex": "^(?i)(unit[\\s_-]*price|price([\\s_-]*per[\\s_-]*unit)?|rate|unit[\\s_-]*cost)$"
+  },
+  "currency": {
+    "header": "currency",
+    "description": "Currency code",
+    "example": "INR",
+    "synonyms": [
+      "currency",
+      "currency code",
+      "curr",
+      "curr code",
+      "currency_code"
+    ],
+    "header_regex": "^(?i)(currency([\\s_-]*code)?|curr([\\s_-]*code)?)$"
+  },
+  "discount_pct": {
+    "header": "discount_pct",
+    "description": "Discount fraction (0-1)",
+    "example": "0.1",
+    "synonyms": [
+      "discount %",
+      "discount pct",
+      "discount percent",
+      "discount",
+      "disc%",
+      "discount rate",
+      "rebate percent"
+    ],
+    "header_regex": "^(?i)(discount([\\s_-]*(%|pct|percent|rate))?|disc%)$"
+  },
+  "tax_pct": {
+    "header": "tax_pct",
+    "description": "Tax fraction (0-1)",
+    "example": "0.18",
+    "synonyms": [
+      "tax %",
+      "tax pct",
+      "tax percent",
+      "tax rate",
+      "gst",
+      "gst %",
+      "vat",
+      "vat %",
+      "sales tax rate"
+    ],
+    "header_regex": "^(?i)((tax|gst|vat)([\\s_-]*(%|pct|percent|rate))|sales[\\s_-]*tax[\\s_-]*rate)$"
+  },
+  "shipping_fee": {
+    "header": "shipping_fee",
+    "description": "Shipping amount",
+    "example": "199.0",
+    "synonyms": [
+      "shipping fee",
+      "ship fee",
+      "shipping",
+      "logistics fee",
+      "delivery fee",
+      "freight"
+    ],
+    "header_regex": "^(?i)(shipping[\\s_-]*fee|ship[\\s_-]*fee|logistics[\\s_-]*fee|delivery[\\s_-]*fee|freight)$"
+  },
+  "total_amount": {
+    "header": "total_amount",
+    "description": "Total amount charged",
+    "example": "16999.00",
+    "synonyms": ["total", "grand total", "amount", "total amount", "net total"],
+    "header_regex": "^(?i)(total[\\s_-]*amount|grand[\\s_-]*total|total|amount|net[\\s_-]*total)$"
+  },
+  "tax_id": {
+    "header": "tax_id",
+    "description": "Tax/GST/VAT identifier",
+    "example": "29ABCDE1234F1Z5",
+    "synonyms": [
+      "tax id",
+      "tax number",
+      "tax#",
+      "reg no",
+      "registration no",
+      "registration number",
+      "gstin",
+      "vat id",
+      "vat number"
+    ],
+    "header_regex": "^(?i)(tax[\\s_-]*id|tax[\\s_-]*(number|#)|reg(istration)?[\\s_-]*(no\\.?|number)|gstin|vat[\\s_-]*(id|number))$"
+  }
+}

@@ -1,0 +1,25 @@
+canonical_name,description,example
+order_id,Unique order identifier,ORD-1001
+order_date,ISO date of order,2025-08-09
+customer_id,Internal customer id,CUST-42
+customer_name,Full name,Aarav Sharma
+email,Contact email,aarav@example.com
+phone,Contact phone,+91-9000156794
+billing_address,Billing address line,221B Baker Street
+shipping_address,Shipping address line,14 MG Road
+city,City,Bengaluru
+state,State/Province,Karnataka
+postal_code,Zip/Postal,560095
+country,Country,India
+product_sku,SKU code,SW-1234
+product_name,Item name,Alpha SaaS
+category,Category,Software Subscription
+subcategory,Subcategory if any,Enterprise
+quantity,Units ordered,3
+unit_price,Price per unit,4999.99
+currency,Currency code,INR
+discount_pct,Discount fraction (0-1),0.1
+tax_pct,Tax fraction (0-1),0.18
+shipping_fee,Shipping amount,199.0
+total_amount,Total amount charged,16999.00
+tax_id,Tax/GST/VAT identifier,29ABCDE1234F1Z5
