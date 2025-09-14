@@ -145,14 +145,23 @@
     "header": "city",
     "description": "City",
     "example": "Bengaluru",
-    "synonyms": ["city", "town"],
+    "synonyms": [
+      "city",
+      "town"
+    ],
     "header_regex": "^(?i)(city|town)$"
   },
   "state": {
     "header": "state",
     "description": "State/Province",
     "example": "Karnataka",
-    "synonyms": ["state", "state/province", "province", "region", "state name"],
+    "synonyms": [
+      "state",
+      "state/province",
+      "province",
+      "region",
+      "state name"
+    ],
     "header_regex": "^(?i)(state([\\s/_-]*province)?|province|region|state[\\s_-]*name)$"
   },
   "postal_code": {
@@ -175,7 +184,11 @@
     "header": "country",
     "description": "Country",
     "example": "India",
-    "synonyms": ["country", "country/region", "nation"],
+    "synonyms": [
+      "country",
+      "country/region",
+      "nation"
+    ],
     "header_regex": "^(?i)(country([\\s/_-]*region)?|nation)$"
   },
   "product_sku": {
@@ -210,28 +223,52 @@
     "header": "category",
     "description": "Category",
     "example": "Software Subscription",
-    "synonyms": ["category", "cat", "cat.", "product category", "line"],
+    "synonyms": [
+      "category",
+      "cat",
+      "cat.",
+      "product category",
+      "line"
+    ],
     "header_regex": "^(?i)(category|cat\\.?|product[\\s_-]*category|line)$"
   },
   "subcategory": {
     "header": "subcategory",
     "description": "Subcategory if any",
     "example": "Enterprise",
-    "synonyms": ["subcategory", "subcat", "sub-cat", "segment", "subclass"],
+    "synonyms": [
+      "subcategory",
+      "subcat",
+      "sub-cat",
+      "segment",
+      "subclass"
+    ],
     "header_regex": "^(?i)(sub[\\s_-]*category|subcat|sub-cat|segment|subclass)$"
   },
   "quantity": {
     "header": "quantity",
     "description": "Units ordered",
     "example": "3",
-    "synonyms": ["qty", "quantity", "unit", "units", "count"],
+    "synonyms": [
+      "qty",
+      "quantity",
+      "unit",
+      "units",
+      "count"
+    ],
     "header_regex": "^(?i)(qty|quantity|units?|count)$"
   },
   "unit_price": {
     "header": "unit_price",
     "description": "Price per unit",
     "example": "4999.99",
-    "synonyms": ["unit price", "price", "price per unit", "rate", "unit cost"],
+    "synonyms": [
+      "unit price",
+      "price",
+      "price per unit",
+      "rate",
+      "unit cost"
+    ],
     "header_regex": "^(?i)(unit[\\s_-]*price|price([\\s_-]*per[\\s_-]*unit)?|rate|unit[\\s_-]*cost)$"
   },
   "currency": {
@@ -297,7 +334,13 @@
     "header": "total_amount",
     "description": "Total amount charged",
     "example": "16999.00",
-    "synonyms": ["total", "grand total", "amount", "total amount", "net total"],
+    "synonyms": [
+      "total",
+      "grand total",
+      "amount",
+      "total amount",
+      "net total"
+    ],
     "header_regex": "^(?i)(total[\\s_-]*amount|grand[\\s_-]*total|total|amount|net[\\s_-]*total)$"
   },
   "tax_id": {
@@ -316,5 +359,23 @@
       "vat number"
     ],
     "header_regex": "^(?i)(tax[\\s_-]*id|tax[\\s_-]*(number|#)|reg(istration)?[\\s_-]*(no\\.?|number)|gstin|vat[\\s_-]*(id|number))$"
+  },
+  "coupon_code": {
+    "header": "coupon_code",
+    "description": "code used to apply a discount or promotion",
+    "example": "SAVE10",
+    "synonyms": [
+      "coupon_code",
+      "promo_code",
+      "discount_code",
+      "voucher_code",
+      "promotion_code",
+      "offer_code",
+      "redeem_code",
+      "deal_code",
+      "gift_code",
+      "e_coupon"
+    ],
+    "header_regex": "^(coupon[_\\s]?code|promo[_\\s]?code|discount[_\\s]?code|voucher[_\\s]?code|promotion[_\\s]?code|offer[_\\s]?code|redeem[_\\s]?code|deal[_\\s]?code|gift[_\\s]?code|e[_\\s]?coupon)$"
   }
 }

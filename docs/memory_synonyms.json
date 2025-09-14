@@ -1,0 +1,54 @@
+{
+  "order_id": [
+    "reference"
+  ],
+  "order_date": [
+    "ordered_on"
+  ],
+  "customer_id": [
+    "client_ref"
+  ],
+  "customer_name": [
+    "client_name"
+  ],
+  "phone": [
+    "contact",
+    "mobile"
+  ],
+  "billing_address": [
+    "bill_to"
+  ],
+  "shipping_address": [
+    "ship_to"
+  ],
+  "postal_code": [
+    "pin"
+  ],
+  "product_sku": [
+    "stock_code"
+  ],
+  "product_name": [
+    "desc"
+  ],
+  "quantity": [
+    "QTY"
+  ],
+  "unit_price": [
+    "price"
+  ],
+  "discount_pct": [
+    "discount"
+  ],
+  "tax_pct": [
+    "gst"
+  ],
+  "shipping_fee": [
+    "logistics_fee"
+  ],
+  "total_amount": [
+    "grand_total"
+  ],
+  "tax_id": [
+    "GSTIN"
+  ]
+}
