@@ -1,16 +1,16 @@
 ## Schema Mapper & Data Quality Fixer
 
-An interactive Streamlit app that maps messy CSV headers to a canonical schema, validates and cleans data deterministically, optionally uses an LLM for conservative suggestions, and lets you promote improvements (new headers, synonyms, value transforms) back into your reusable knowledge packs.
+An interactive Streamlit app that maps messy CSV headers to a canonical schema, validates and cleans data deterministically, uses an LLM as a conservative backup, and lets you promote improvements (new headers, synonyms, value transforms) back into a single source of truth JSON.
 
 ### Key Features
 
 - **Upload CSV with robust parsing**: Tries multiple encodings and parsing modes automatically.
-- **Header mapping**: Fuzzy/regex/synonym-based mapping to a canonical schema, with optional LLM fallback.
+- **Header mapping**: Exact/synonym/regex-based mapping to a canonical schema, with LLM fallback when no JSON match is found.
 - **Overrides UI**: Review/override each suggested mapping.
 - **Schema growth**: Propose and accept brand-new canonical headers using LLM, saved into `docs/schema_truth_source.json`.
 - **Deterministic cleaning & validation**: Column-specific rules normalize values and produce issue reports with suggestions.
 - **Targeted fixes**: Bulk-apply suggested fixes; preview final vs raw.
-- **Promote learnings**: One-click promotion of discovered synonyms and value transforms to `docs/cleaning_pack.json` and `docs/memory_synonyms.json`.
+- **Promote learnings**: One-click promotion of discovered synonyms and value transforms directly into `docs/schema_truth_source.json`.
 - **Export**: Download a clean, schema-aligned CSV.
 - **Session Logging**: Rolling logs embedded in the UI and persisted to `logs/app.log`.
 
@@ -21,16 +21,14 @@ app.py                         # Streamlit UI: 5-step workflow
 requirements.txt               # Python dependencies
 src/
   csv_loader.py               # Robust CSV reader with encoding fallbacks
-  mapper.py                   # Header mapping logic (synonyms/regex/fuzzy/LLM)
+  mapper.py                   # Header mapping logic (synonyms/regex/LLM backup)
   clean_validate.py           # Column-wise validators and proposed DataFrame builder
   schema_truth.py             # Schema truth loader and helpers
   persistence.py              # JSON load/save utilities
-  llm.py                      # Optional OpenAI calls (guarded)
+  llm.py                      # OpenAI calls (backup only, guarded by key)
   logging_utils.py            # File + Streamlit log handlers
 docs/
-  schema_truth_source.json    # Canonical schema with synonyms and regex
-  cleaning_pack.json          # Promoted synonyms and value transforms (created at runtime)
-  memory_synonyms.json        # Learned synonyms (created at runtime)
+  schema_truth_source.json    # Single source of truth (canonical + synonyms + optional regex + value_transforms)
   Project6InputData*.csv      # Example inputs
   Project6StdFormat.csv       # Example standardized output
 logs/
@@ -71,9 +69,8 @@ Open the provided local URL in your browser.
    - The app suggests a mapping from source headers to canonical schema using multiple strategies:
      - Exact canonical key match
      - Regex match from `header_regex` in the schema truth
-     - Case-insensitive synonym match (schema + learned/promoted)
-     - Fuzzy matching on synonyms (Levenshtein similarity)
-     - Optional LLM fallback (maps unknown headers to best canonical)
+     - Case-insensitive synonym match (from the single truth JSON)
+     - LLM fallback (only when no JSON match is found)
    - Review per-column suggestions and override via a selectbox, including "— Ignore —".
    - If LLM header proposals are generated for headers that do not fit the existing schema, you can accept them to extend `docs/schema_truth_source.json`.
 
@@ -82,16 +79,16 @@ Open the provided local URL in your browser.
    - Builds a proposed cleaned DataFrame aligned to the canonical column order.
    - For each canonical column, deterministic validators normalize values and emit issues if invalid, with suggestions where possible.
    - Missing canonical columns and extra columns are summarized as issues.
-   - Optional LLM suggestions can provide conservative fixes for invalid values (used only when deterministic logic cannot suggest a fix).
+   - LLM suggestions provide conservative fixes for invalid values (used only when deterministic logic cannot suggest a fix and API key is present).
    - Tabs show: Raw, Proposed (not yet applied), and Issues Found.
 
 4. Targeted Fixes
 
    - Review the issues table. Click "Apply all suggested fixes" to materialize suggestions into the Final DataFrame.
    - See consolidated schema proposals collected during cleaning and accept them to grow the schema truth.
-   - Promote learnings:
-     - Header synonyms discovered during mapping → `docs/cleaning_pack.json` under `promoted_synonyms` and `docs/memory_synonyms.json`.
-     - Value transforms recorded from issues → `docs/cleaning_pack.json` under `value_transforms`.
+   - Promote learnings (single source of truth):
+     - Header synonyms discovered during mapping are written into `docs/schema_truth_source.json` under each canonical's `synonyms`.
+     - Value transforms recorded from issues are written into `docs/schema_truth_source.json` under top-level `value_transforms`.
 
 5. Export
    - Preview Raw vs Final.
@@ -112,7 +109,7 @@ The schema is a JSON object keyed by canonical column names. Each entry includes
 }
 ```
 
-On startup, the app compiles `header_regex` and normalizes synonyms to `_syn_lc` for matching. You can add/adjust entries to bias mapping, or accept proposals from the UI to grow this file.
+On startup, the app normalizes synonyms and uses any `header_regex` for matching. You can add/adjust entries to bias mapping, or accept proposals from the UI to grow this file.
 
 Example canonical keys included by default (not exhaustive): `order_id`, `order_date`, `customer_id`, `customer_name`, `email`, `phone`, `billing_address`, `shipping_address`, `city`, `state`, `postal_code`, `country`, `product_sku`, `product_name`, `category`, `subcategory`, `quantity`, `unit_price`, `currency`, `discount_pct`, `tax_pct`, `shipping_fee`, `total_amount`, `tax_id`.
 
@@ -123,9 +120,8 @@ For each source header:
 1. Normalize header (lowercased, whitespace collapsed, symbols harmonized, non‑alnum removed for compact comparison).
 2. Check exact canonical key match.
 3. Check regex match against each canonical entry's `header_regex`.
-4. Check normalized synonym map (schema synonyms + learned/promoted synonyms).
-5. Fuzzy similarity against synonyms (RapidFuzz Levenshtein), threshold ≈ 0.85.
-6. If still unmatched and LLM enabled, query model for a canonical mapping.
+4. Check normalized synonym map (schema synonyms from the truth file).
+5. If still unmatched and LLM key present, query model for a canonical mapping.
 
 Results include `canonical`, `confidence`, and `method` (canonical, regex, synonym, fuzzy, llm, unmapped). You can override any mapping in the UI.
 
@@ -152,13 +148,9 @@ For invalid or empty values, the app records an issue with `row_index`, `column`
 
 Under Targeted Fixes:
 
-- Click "Promote all suggested synonyms and transforms" to write:
-  - `docs/memory_synonyms.json`: learned synonyms by canonical key
-  - `docs/cleaning_pack.json`:
-    - `promoted_synonyms`: the same synonyms for quick reuse
-    - `value_transforms`: per-column pattern→suggest mappings derived from issues
-
-These files are loaded on startup and merged into mapping logic.
+- Click "Promote all suggested synonyms and transforms to schema truth" to write:
+  - Header synonyms into each canonical entry's `synonyms` array in `docs/schema_truth_source.json`
+  - Value transforms into the top-level `value_transforms` object in `docs/schema_truth_source.json`
 
 ### Environment & Logging
 
@@ -166,15 +158,14 @@ These files are loaded on startup and merged into mapping logic.
 - Log level selectable in sidebar (DEBUG/INFO/WARNING/ERROR).
 - Logs appear inline in the app (expander) and rotate in `logs/app.log`.
 
-### Running Without LLM
+### LLM Usage
 
-All core features work without an API key. LLM augmentation is used only when enabled:
+The LLM is always enabled as a backup. It is called only when:
 
-- Header LLM mapping for unmapped headers
-- Proposing new canonical headers (with description, example, synonyms, regex)
-- Cleaning suggestions when deterministic logic cannot suggest a fix
+- No JSON match is found for a header mapping
+- Deterministic cleaning cannot produce a compliant value
 
-If `OPENAI_API_KEY` is absent or OpenAI SDK is missing, LLM paths are skipped safely.
+If `OPENAI_API_KEY` is absent, these backup calls are skipped and the app continues deterministically.
 
 ### Example Data
 

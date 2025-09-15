@@ -24,8 +24,6 @@ LOGS_DIR = BASE_DIR / "logs"
 LOG_FILE = LOGS_DIR / "app.log"
 DOCS_DIR = BASE_DIR / "docs"
 TRUTH_PATH = DOCS_DIR / "schema_truth_source.json"
-CLEAN_PACK_PATH = DOCS_DIR / "cleaning_pack.json"
-LEARNED_SYNONYMS_PATH = DOCS_DIR / "memory_synonyms.json"
 ENV_PATH = BASE_DIR / ".env"
 
 # Logging setup (attach streamlit handler to mirror into UI)
@@ -101,15 +99,13 @@ if "overrides" not in st.session_state:
 if "schema_changes" not in st.session_state:
 	st.session_state.schema_changes = []
 
-# Load truth and packs
+# Load schema truth only
 try:
 	truth = load_schema_truth(TRUTH_PATH)
-	clean_pack = load_json_file(CLEAN_PACK_PATH, default={})
-	learned_synonyms = load_json_file(LEARNED_SYNONYMS_PATH, default={})
-	logger.info("Loaded truth and packs: truth_keys=%d, promoted_synonyms=%d, memory_synonyms=%d", len(truth), len((clean_pack or {}).get("promoted_synonyms", {})), len(learned_synonyms))
+	logger.info("Loaded schema truth: truth_keys=%d", len(canonical_keys(truth)))
 except Exception as e:
-	logger.exception("Failed to load configuration")
-	st.error(f"Failed to load configuration: {e}")
+	logger.exception("Failed to load schema truth")
+	st.error(f"Failed to load schema truth: {e}")
 	st.stop()
 
 # Helper to render full-height tables
@@ -157,23 +153,16 @@ elif step == "Mapper":
 		st.warning("Upload a CSV first.")
 		st.stop()
 
-	use_llm = st.toggle("Enable LLM fallback for unmapped headers", value=True, help="Uses OpenAI if configured.")
+	# LLM always enabled as backup (will run only when no JSON match)
+	use_llm = True
 	logger.info("Mapper start: columns=%s use_llm=%s", list(st.session_state.raw_df.columns), use_llm)
-	if use_llm and not have_openai_key():
-		st.info("OpenAI key not detected in environment. Set OPENAI_API_KEY in .env to enable.")
+	if not have_openai_key():
+		st.info("OpenAI key not detected. Backup LLM mapping will be skipped where needed.")
 
 	source_headers = list(st.session_state.raw_df.columns)
 
-	# Merge learned + promoted synonyms for mapping
-	merged_synonyms: Dict[str, List[str]] = {}
-	promoted = (clean_pack or {}).get("promoted_synonyms", {})
-	for canon in set(list(learned_synonyms.keys()) + list(promoted.keys())):
-		vals = []
-		vals.extend(learned_synonyms.get(canon, []))
-		for s in promoted.get(canon, []):
-			if s.lower() not in [v.lower() for v in vals]:
-				vals.append(s)
-		merged_synonyms[canon] = vals
+	# Use only synonyms from the single truth source
+	merged_synonyms: Dict[str, List[str]] = {k: (v.get("synonyms", []) if isinstance(v, dict) else []) for k, v in truth.items()}
 
 	with st.spinner("Suggesting mapping..."):
 		suggested, unmatched = suggest_mapping(
@@ -279,17 +268,17 @@ elif step == "Clean/Validate":
 		st.warning("Complete Upload and Mapper steps first.")
 		st.stop()
 
-	use_llm_clean = st.toggle("Enable LLM suggestions for values", value=True)
+	use_llm_clean = True
 	logger.info("Clean/Validate start: rows=%d use_llm=%s", len(st.session_state.raw_df), use_llm_clean)
-	if use_llm_clean and not have_openai_key():
-		st.info("OpenAI key not detected in environment.")
+	if not have_openai_key():
+		st.info("OpenAI key not detected. Deterministic cleaning only.")
 
 	with st.spinner("Building proposed cleaned DataFrame and collecting issues..."):
 		proposed_df, issues = build_proposed_clean_df(
 			raw_df=st.session_state.raw_df,
 			mapping_result=st.session_state.mapping_result,
 			truth=truth,
-			clean_pack=clean_pack,
+			clean_pack={"value_transforms": truth.get("value_transforms", {})},
 			use_llm=use_llm_clean,
 		)
 	logger.info("Clean/Validate produced: proposed_shape=%s issues=%d", proposed_df.shape, len(issues))
