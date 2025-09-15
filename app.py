@@ -360,7 +360,7 @@ elif step == "Targeted Fixes":
 				st.session_state.schema_changes.extend(added)
 				st.success("Proposals added to schema truth.")
 
-	# Consolidated promotions (unchanged except tracking changes)
+	# Consolidated promotions directly into schema truth
 	st.markdown("### Promote improvements (one-click)")
 	candidate_synonyms: Dict[str, List[str]] = {}
 	mapped = st.session_state.mapping_result or {}
@@ -390,37 +390,29 @@ elif step == "Targeted Fixes":
 	with cols[1]:
 		st.write(f"Value transforms to record: {sum(len(v) for v in candidate_transforms.values())}")
 
-	if st.button("Promote all suggested synonyms and transforms"):
-		mem = load_json_file(LEARNED_SYNONYMS_PATH, default={})
-		prom = clean_pack.get("promoted_synonyms", {})
-		changed = False
-		added_changes = []
+	if st.button("Promote all suggested synonyms and transforms to schema truth"):
+		truth_data = load_json_file(TRUTH_PATH, default={})
+		changes = []
+		# Add synonyms per canonical
 		for canon, syns in candidate_synonyms.items():
-			mem.setdefault(canon, [])
-			prom.setdefault(canon, [])
+			truth_data.setdefault(canon, {})
+			existing = truth_data[canon].get("synonyms", []) or []
 			for s in syns:
-				if s.lower() not in [x.lower() for x in mem[canon]]:
-					mem[canon].append(s)
-					added_changes.append({"action": "promote_synonym", "canonical": canon, "synonym": s})
-					changed = True
-				if s.lower() not in [x.lower() for x in prom[canon]]:
-					prom[canon].append(s)
-					changed = True
-		if changed:
-			save_json_file(LEARNED_SYNONYMS_PATH, mem)
-			clean_pack["promoted_synonyms"] = prom
-			save_json_file(CLEAN_PACK_PATH, clean_pack)
-			st.session_state.schema_changes.extend(added_changes)
-
-		vt = clean_pack.get("value_transforms", {})
+				if s.lower() not in [x.lower() for x in existing]:
+					existing.append(s)
+					changes.append({"action": "promote_synonym", "canonical": canon, "synonym": s})
+			truth_data[canon]["synonyms"] = existing
+		# Record value transforms at top-level
+		vt = truth_data.get("value_transforms", {})
 		for col, items in candidate_transforms.items():
 			vt.setdefault(col, [])
 			vt[col].extend(items)
 			for it in items:
-				st.session_state.schema_changes.append({"action": "record_transform", "column": col, **it})
-		clean_pack["value_transforms"] = vt
-		save_json_file(CLEAN_PACK_PATH, clean_pack)
-		st.success("Promoted all candidate synonyms and value transforms.")
+				changes.append({"action": "record_transform", "column": col, **it})
+		truth_data["value_transforms"] = vt
+		save_json_file(TRUTH_PATH, truth_data)
+		st.session_state.schema_changes.extend(changes)
+		st.success("Promoted synonyms and value transforms to schema truth.")
 
 	# Final DF preview
 	if st.session_state.final_df is not None:
