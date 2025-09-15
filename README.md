@@ -178,6 +178,3 @@ See `docs/Project6InputData*.csv` and the standardized sample `docs/Project6StdF
 - Too many issues: inspect the Issues tab; consider enabling LLM suggestions for targeted columns.
 - New headers missing after acceptance: changes are saved to `docs/schema_truth_source.json`; if the UI doesn’t update, click rerun when prompted.
 
-### License
-
-MIT (adjust as needed).
